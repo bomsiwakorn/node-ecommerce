@@ -47,9 +47,15 @@ function findUser(username,password) {
         db.query(sql, (error,result) => {
             console.log(result);
             if (error) return reject(error)
-            if (result[0].password !== password) {
+            if (result.length === 0) {
                 return reject({
                     code: '001',
+                    msg: 'Username is not exist.'
+                })
+            }
+            if (result[0].password !== password) {
+                return reject({
+                    code: '002',
                     msg: 'Invalid password!'
                 })
             }
@@ -68,7 +74,7 @@ app.post('/login', async (req,res) => {
         })
     } catch (error) {
         console.log(error)
-        if (error.code === '001') {
+        if (error.code === '001' || error.code === '002') {
             return res.status(500).send({
                 message: error.msg
             })
